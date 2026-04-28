@@ -221,18 +221,18 @@ Implementations:
 | PostgreSQL | 15 | Primary database for all three services |
 | pgvector | pg15 | Vector similarity search on file embeddings |
 | Flyway | 9.x | Database schema migrations |
-| AWS S3 / LocalStack | 3.x | File object storage |
+| AWS S3 / LocalStack | 2.25.14 / 3.0 | File object storage |
 | Apache Tika | 2.9.2 | Text extraction from PDF, DOCX, TXT |
 | OpenAI API | — | GPT-4o-mini (summarization), text-embedding-3-small (search) |
 | Anthropic Claude API | — | Alternative LLM provider in AI SDK |
-| Resilience4j | 2.x | Circuit Breaker + Retry for LLM calls |
-| JTokkit | — | Accurate token counting (cl100k_base) |
-| JJWT | 0.12.x | JWT signing and validation |
+| Resilience4j | 2.2.0 | Circuit Breaker + Retry for LLM calls |
+| JTokkit | 1.1.0 | Accurate token counting (cl100k_base) |
+| JJWT | 0.12.6 | JWT signing and validation |
 | BCrypt | — | Password hashing via Spring Security |
 | Docker Compose | — | Full local stack orchestration |
 | Testcontainers | — | PostgreSQL + pgvector integration tests |
-| JaCoCo | — | Code coverage gate (80% minimum) |
-| Springdoc OpenAPI | — | Swagger UI for each service |
+| JaCoCo | 0.8.12 | Code coverage gate (80% minimum) |
+| Springdoc OpenAPI | 2.8.4 | Swagger UI for each service |
 
 ---
 
