@@ -7,6 +7,10 @@
 .claude/
 CLAUDE.md
 
+# ── Local dev scripts (not part of the project) ───────────────────────────
+update-study-guides.ps1
+session-status.md
+
 # ── Maven build output ─────────────────────────────────────────────────────
 target/
 **/target/
