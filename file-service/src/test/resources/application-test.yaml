@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    # overridden by @ServiceConnection / @DynamicPropertySource in tests
+    url: jdbc:postgresql://localhost:5433/files_db
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: false
+  flyway:
+    enabled: true
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+
+aws:
+  s3:
+    bucket: syncvault-files-test
+    region: us-east-1
+    endpoint-override: http://localhost:4566
+    presigned-url-duration-minutes: 15
+
+jwt:
+  secret: test-jwt-secret-key-for-tests-only
+
+services:
+  user-service:
+    url: http://localhost:8081

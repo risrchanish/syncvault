@@ -1,0 +1,83 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: file-service
+  datasource:
+    url: jdbc:postgresql://localhost:5433/files_db?TimeZone=Asia/Kolkata
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      connection-init-sql: SELECT 1
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+
+jwt:
+  secret: ${JWT_SECRET}
+  access:
+    expiration: 86400000     # 24 hours in ms (dev) — revert to 900000 for production
+
+aws:
+  s3:
+    bucket: syncvault-files
+    region: us-east-1
+    endpoint-override: http://localhost:4566
+    presigned-url-duration-minutes: 15
+
+services:
+  user-service:
+    url: http://localhost:8081
+
+logging:
+  level:
+    com.syncvault.fileservice: DEBUG
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+ai:
+  provider: openai
+  api-key: ${OPENAI_API_KEY:not-configured}
+  model: gpt-4o-mini
+  token-limit: 100000
+  resilient: true

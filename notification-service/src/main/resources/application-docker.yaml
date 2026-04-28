@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres-notifications:5432/notifications_db
+  kafka:
+    bootstrap-servers: kafka:9092
+
+# Disable mail health check — service sends email fine; this prevents false DOWN
+# when Gmail credentials are not injected (e.g. staging / smoke tests).
+management:
+  health:
+    mail:
+      enabled: false
+
+services:
+  user-service:
+    url: http://user-service:8081

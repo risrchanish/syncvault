@@ -1,0 +1,3 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres-users:5432/users_db

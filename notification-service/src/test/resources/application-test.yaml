@@ -1,0 +1,36 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testnotifications;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+    hikari:
+      connection-init-sql: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    # Override PostgreSQLDialect from main config — prevents "SET client_min_messages" being sent to H2
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+    show-sql: false
+  flyway:
+    enabled: false
+  kafka:
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+  mail:
+    host: localhost
+    port: 3025
+    username: test
+    password: test
+
+management:
+  health:
+    mail:
+      enabled: false   # JavaMailSender is mocked — prevents mailHealthContributor failure
+
+notification:
+  dev-recipient: test@example.com

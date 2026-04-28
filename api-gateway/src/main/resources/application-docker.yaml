@@ -1,0 +1,11 @@
+services:
+  user-service:
+    url: http://user-service:8081
+  file-service:
+    url: http://file-service:8082
+  notification-service:
+    url: http://notification-service:8083
+  payment-service:
+    url: http://payment-service:8084
+  collaborate-service:
+    url: http://collaborate-service:8085

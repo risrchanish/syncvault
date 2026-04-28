@@ -1,0 +1,14 @@
+jwt:
+  secret: test-jwt-secret-key-for-tests-only
+
+services:
+  user-service:
+    url: http://localhost:19991
+  file-service:
+    url: http://localhost:19992
+  notification-service:
+    url: http://localhost:19993
+  payment-service:
+    url: http://localhost:19994
+  collaborate-service:
+    url: http://localhost:19995

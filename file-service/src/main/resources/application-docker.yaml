@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres-files:5432/files_db
+  kafka:
+    bootstrap-servers: kafka:9092
+
+aws:
+  s3:
+    endpoint-override: http://localstack:4566
+
+services:
+  user-service:
+    url: http://user-service:8081
+
+ai:
+  api-key: ${OPENAI_API_KEY:not-configured}

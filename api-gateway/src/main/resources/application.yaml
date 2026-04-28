@@ -1,0 +1,79 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: auth-route
+          uri: ${services.user-service.url}
+          predicates:
+            - Path=/auth/**
+
+        - id: user-route
+          uri: ${services.user-service.url}
+          predicates:
+            - Path=/users/**
+
+        - id: file-route
+          uri: ${services.file-service.url}
+          predicates:
+            - Path=/files/**
+
+        - id: notification-route
+          uri: ${services.notification-service.url}
+          predicates:
+            - Path=/notifications/**
+
+        - id: payment-route
+          uri: ${services.payment-service.url}
+          predicates:
+            - Path=/payments/**
+
+        - id: collaborate-route
+          uri: ${services.collaborate-service.url}
+          predicates:
+            - Path=/collaborate/**
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+
+jwt:
+  secret: ${JWT_SECRET}
+
+gateway:
+  public-paths: /auth/**,/actuator/**,/swagger-ui.html,/swagger-ui/**,/v3/api-docs/**
+  rate-limit:
+    authenticated-limit: 100
+    unauthenticated-limit: 10
+
+services:
+  user-service:
+    url: http://localhost:8081
+  file-service:
+    url: http://localhost:8082
+  notification-service:
+    url: http://localhost:8083
+  payment-service:
+    url: http://localhost:8084
+  collaborate-service:
+    url: http://localhost:8085
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+logging:
+  level:
+    com.syncvault.gateway: DEBUG

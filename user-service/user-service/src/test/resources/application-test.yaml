@@ -1,0 +1,15 @@
+spring:
+  jpa:
+    show-sql: false       # suppress SQL noise in test logs
+  flyway:
+    enabled: true         # run Flyway migrations against Testcontainers DB
+
+jwt:
+  secret: test-jwt-secret-key-for-tests-only
+
+# Disable Swagger endpoint scanning during tests (reduces startup noise)
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

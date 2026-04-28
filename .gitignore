@@ -1,0 +1,51 @@
+# ── Secrets & environment ──────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Claude Code internal (contains API keys and tool permissions) ──────────
+.claude/
+
+# ── Maven build output ─────────────────────────────────────────────────────
+target/
+**/target/
+*.class
+*.jar
+*.war
+*.ear
+
+# ── IDE files ─────────────────────────────────────────────────────────────
+.idea/
+**/.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+*.swo
+.settings/
+.classpath
+.project
+.factorypath
+
+# ── OS files ──────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Log files ─────────────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Documents & binary assets (not part of the codebase) ──────────────────
+*.pdf
+*.docx
+*.doc
+*.xlsx
+*.xls
+*.pptx
+*.ppt
+*.html
+
+# ── Maven wrapper cache ────────────────────────────────────────────────────
+.mvn/wrapper/maven-wrapper.jar
