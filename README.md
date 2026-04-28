@@ -454,13 +454,19 @@ curl -s -X PUT http://localhost:8080/files/$FILE_ID \
 - Full Docker Compose stack with LocalStack S3
 - 289 automated tests, 80% coverage gate
 
-### Phase 2 — Planned
+### Phase 2 — Observability + Caching (Planned)
 
-> *To be defined*
+Phase 2 focuses on making the platform operationally mature. Redis will be introduced as a caching layer for subscription status lookups — currently every file upload triggers a synchronous HTTP call from file-service to user-service to check storage quota; caching that response with a short TTL eliminates the inter-service round trip on the hot path. Prometheus metrics will be exposed from each service via Micrometer and scraped into a Grafana dashboard, giving visibility into upload throughput, AI pipeline latency, Kafka consumer lag, and rate limiter hit rates per service.
 
-### Phase 3 — Planned
+### Phase 3 — Advanced AI Features + Local LLM Support (Planned)
 
-> *To be defined*
+Phase 3 expands the AI capabilities significantly. The centrepiece is **RAG-based document chat** — users will be able to ask natural language questions across their entire file library, with answers grounded in retrieved document chunks rather than hallucinated responses. Alongside this: **auto folder organisation** where the AI analyses embedding clusters across a user's files and suggests a folder structure based on content patterns; **duplicate detection** using cosine distance between embeddings to flag near-identical documents uploaded at different times; **multi-language document summaries** so that a French PDF produces a French summary without any prompt engineering; and an **AI cost dashboard** that tracks token usage and estimated spend per user, enabling per-user quotas and abuse detection.
+
+On the provider side, Phase 3 adds **Ollama as a local LLM provider** — a third `LLMClient` implementation that routes requests to a locally running model with zero API cost, which is already a slot in the AI SDK's provider abstraction. Summarisation responses will move to **streaming** so the client receives tokens progressively rather than waiting for the full completion, reducing perceived latency on long documents.
+
+### Phase 4 — Production Infrastructure (Planned)
+
+Phase 4 moves the platform from Docker Compose to a production-grade AWS deployment. Kubernetes manifests will be written for all services with horizontal pod autoscaling on CPU and custom metrics (Kafka consumer lag for notification-service, request rate for api-gateway). The AWS stack targets EC2 for compute, RDS for managed PostgreSQL (with Multi-AZ for the files database), MSK for managed Kafka, real S3 replacing LocalStack, and Route 53 with an Application Load Balancer for traffic management and TLS termination.
 
 ---
 
@@ -497,6 +503,26 @@ The AI summarization and embedding pipeline runs on Java 21 virtual threads (`Th
 **Why:** Both pipelines are I/O-bound — they block on HTTP calls to the OpenAI API. Virtual threads are cheap enough that launching two per upload has negligible overhead and avoids holding a platform thread during the blocking HTTP wait. This keeps the main upload request path fast (returns immediately) while AI processing happens asynchronously.
 
 **Trade-off:** No backpressure mechanism. Under extreme upload load, many concurrent OpenAI calls could exhaust the rate limit. The `ResilientLLMClient` circuit breaker provides a safety valve, but a dedicated executor with bounded concurrency would be more robust at scale.
+
+---
+
+## Payment Integration — Future Plug-in Points
+
+A Payment Service is not built in Phase 1, but the architecture was designed so that adding one requires zero restructuring of any existing service. All four integration points are already coded and waiting — they just need to be connected.
+
+**Touch Point 1 — Subscription tier in the User schema.** The `users` table has a `subscription_plan` column (`FREE` / `PRO` / `ENTERPRISE`) written by Flyway V1 and readable by every service today. When a Payment Service processes a successful charge, it calls `PUT /users/{userId}/subscription` and updates this column. No schema migration needed.
+
+**Touch Point 2 — Storage quota in FileService.** `FileService.getStorageLimit()` currently returns a hardcoded 5 GB for all users. The method is already extracted and isolated — one line change swaps the constant for an HTTP call to the Payment Service that returns the quota for the user's current plan. The rest of `FileService` is unchanged.
+
+**Touch Point 3 — Gateway route already declared.** `api-gateway/application.yaml` already contains a `/payments/**` route entry pointing at `${services.payment-service.url}`. Spinning up a Payment Service on its expected port is all that is needed — the gateway will start routing immediately with no configuration change.
+
+**Touch Point 4 — Payment receipt emails in Notification Service.** The notification-service Kafka consumer is structured to handle any topic. Adding payment receipt emails requires one new `@KafkaListener` method on the `payment.confirmed` topic and one new email template in `EmailNotificationService` — nothing else in the service changes.
+
+## Future Services
+
+**Payment Service (Razorpay / Stripe).** A dedicated service handling subscription billing, charge lifecycle, and webhook processing from the payment provider. It owns its own database for transaction records and integrates with the four touch points above. No existing service needs modification when it is deployed.
+
+**Collaboration Service (WebSocket + Operational Transformation).** A service enabling real-time concurrent editing of documents stored in SyncVault. Clients connect via WebSocket; concurrent edits are reconciled using Operational Transformation so two users editing the same document simultaneously see a consistent result. The conflict detection already built into file-service (optimistic locking) handles the persistence layer — the collaboration service sits in front of it, resolving edit operations before they are committed.
 
 ---
 
