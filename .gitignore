@@ -5,6 +5,7 @@
 
 # ── Claude Code internal (contains API keys and tool permissions) ──────────
 .claude/
+CLAUDE.md
 
 # ── Maven build output ─────────────────────────────────────────────────────
 target/
